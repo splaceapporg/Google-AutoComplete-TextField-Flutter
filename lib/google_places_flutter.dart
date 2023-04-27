@@ -24,7 +24,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
   String googleAPIKey;
   int debounceTime = 600;
   bool enabled;
-  TextChanged? textChanged;
+  Function(String)? textChanged;
   List<String>? countries = [];
   TextEditingController textEditingController = TextEditingController();
 
@@ -71,8 +71,8 @@ class _GooglePlaceAutoCompleteTextFieldState
         style: widget.textStyle,
         controller: widget.textEditingController,
         onChanged: (string) {
-          subject.add(string);
           textChanged(string);
+          subject.add(string);
         },
       ),
     );
