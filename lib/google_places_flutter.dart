@@ -16,24 +16,31 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
   ItemClick? itmClick;
   GetPlaceDetailswWithLatLng? getPlaceDetailWithLatLng;
   bool isLatLngRequired = true;
-
+  double? lat;
+  double? lng;
+  double? radius;
+  List<String>? types;
   TextStyle textStyle;
   String googleAPIKey;
   int debounceTime = 600;
   List<String>? countries = [];
   TextEditingController textEditingController = TextEditingController();
 
-  GooglePlaceAutoCompleteTextField(
-      {required this.textEditingController,
-      required this.googleAPIKey,
-      this.debounceTime: 600,
-      this.inputDecoration: const InputDecoration(),
-      this.itmClick,
-      this.isLatLngRequired=true,
-      this.textStyle: const TextStyle(),
-      this.countries,
-      this.getPlaceDetailWithLatLng,
-      });
+  GooglePlaceAutoCompleteTextField({
+    required this.textEditingController,
+    required this.googleAPIKey,
+    this.debounceTime: 600,
+    this.inputDecoration: const InputDecoration(),
+    this.itmClick,
+    this.lat,
+    this.lng,
+    this.radius,
+    this.types,
+    this.isLatLngRequired = true,
+    this.textStyle: const TextStyle(),
+    this.countries,
+    this.getPlaceDetailWithLatLng,
+  });
 
   @override
   _GooglePlaceAutoCompleteTextFieldState createState() =>
@@ -68,6 +75,18 @@ class _GooglePlaceAutoCompleteTextFieldState
     String url =
         "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$text&key=${widget.googleAPIKey}";
 
+    if (widget.lat != null && widget.lng != null) {
+      url = url + "&location=${widget.lat},${widget.lng}";
+    }
+
+    if (widget.radius != null) {
+      url = url + "&radius=${widget.radius}";
+    }
+
+    if(widget.types!=null){
+      url = url + "&types=${widget.types!.join("|")}";
+    }
+
     if (widget.countries != null) {
       // in
 
@@ -81,8 +100,6 @@ class _GooglePlaceAutoCompleteTextFieldState
         }
       }
     }
-
-
 
     Response response = await dio.get(url);
     PlacesAutocompleteResponse subscriptionResponse =
@@ -196,7 +213,8 @@ class _GooglePlaceAutoCompleteTextFieldState
 }
 
 PlacesAutocompleteResponse parseResponse(Map responseBody) {
-  return PlacesAutocompleteResponse.fromJson(responseBody as Map<String, dynamic>);
+  return PlacesAutocompleteResponse.fromJson(
+      responseBody as Map<String, dynamic>);
 }
 
 PlaceDetails parsePlaceDetailMap(Map responseBody) {
