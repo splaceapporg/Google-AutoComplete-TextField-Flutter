@@ -24,6 +24,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
   String googleAPIKey;
   int debounceTime = 600;
   bool enabled;
+  TextChanged? textChanged;
   List<String>? countries = [];
   TextEditingController textEditingController = TextEditingController();
 
@@ -33,6 +34,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
     this.debounceTime: 600,
     this.inputDecoration: const InputDecoration(),
     this.itmClick,
+    this.textChanged,
     this.lat,
     this.lng,
     this.radius,
@@ -68,7 +70,10 @@ class _GooglePlaceAutoCompleteTextFieldState
         decoration: widget.inputDecoration,
         style: widget.textStyle,
         controller: widget.textEditingController,
-        onChanged: (string) => (subject.add(string)),
+        onChanged: (string) {
+          subject.add(string);
+          textChanged(string);
+        },
       ),
     );
   }
@@ -225,5 +230,6 @@ PlaceDetails parsePlaceDetailMap(Map responseBody) {
 }
 
 typedef ItemClick = void Function(Prediction postalCodeResponse);
+typedef TextChanged = void Function(String val);
 typedef GetPlaceDetailswWithLatLng = void Function(
     Prediction postalCodeResponse);
