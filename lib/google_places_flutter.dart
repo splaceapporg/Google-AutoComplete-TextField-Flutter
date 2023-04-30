@@ -197,10 +197,11 @@ class _GooglePlaceAutoCompleteTextFieldState
                   offset: Offset(0.0, size.height + 5.0),
                   child: Material(
                       elevation: 1.0,
-                      child: ListView.builder(
+                      child: ListView.separated(
                         padding: EdgeInsets.zero,
                         shrinkWrap: true,
                         itemCount: alPredictions.length,
+                        separatorBuilder: (context, index) => Divider(),
                         itemBuilder: (BuildContext context, int index) {
                           String desc = alPredictions[index].description!;
                           return ListTile(
