@@ -57,6 +57,7 @@ class _GooglePlaceAutoCompleteTextFieldState
     extends State<GooglePlaceAutoCompleteTextField> {
   final subject = new PublishSubject<String>();
   OverlayEntry? _overlayEntry;
+  OverlayEntry? _overlayLoadingEntry;
   List<Prediction> alPredictions = [];
 
   TextEditingController controller = TextEditingController();
@@ -83,8 +84,9 @@ class _GooglePlaceAutoCompleteTextFieldState
   }
 
   getLocation(String text) async {
-    this._overlayEntry = this._createOverlayEntry(loading: true);
-    Overlay.of(context)!.insert(this._overlayEntry!);
+    this._overlayLoadingEntry = null;
+    this._overlayLoadingEntry = this._createLoadingOverlayEntry();
+    Overlay.of(context)!.insert(this._overlayLoadingEntry!);
 
     Dio dio = new Dio();
     String url =
@@ -119,7 +121,7 @@ class _GooglePlaceAutoCompleteTextFieldState
     Response response = await dio.get(url);
     PlacesAutocompleteResponse subscriptionResponse =
         PlacesAutocompleteResponse.fromJson(response.data);
-    removeOverlay();
+    this._overlayLoadingEntry!.remove();
     if (text.length == 0) {
       alPredictions.clear();
       this._overlayEntry!.remove();
@@ -152,7 +154,34 @@ class _GooglePlaceAutoCompleteTextFieldState
     getLocation(text);
   }
 
-  OverlayEntry? _createOverlayEntry({bool loading = false}) {
+  OverlayEntry? _createLoadingOverlayEntry() {
+    if (context != null && context.findRenderObject() != null) {
+      RenderBox renderBox = context.findRenderObject() as RenderBox;
+      var size = renderBox.size;
+      var offset = renderBox.localToGlobal(Offset.zero);
+      return OverlayEntry(
+          builder: (context) => Positioned(
+              left: offset.dx,
+              top: size.height + offset.dy,
+              width: size.width,
+              child: CompositedTransformFollower(
+                  showWhenUnlinked: false,
+                  link: this._layerLink,
+                  offset: Offset(0.0, size.height + 5.0),
+                  child: Material(
+                      elevation: 1.0,
+                      child: Center(
+                        child: Container(
+                            width: 20,
+                            height: 20,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 10),
+                            child: const CircularProgressIndicator()),
+                      )))));
+    }
+  }
+
+  OverlayEntry? _createOverlayEntry() {
     if (context != null && context.findRenderObject() != null) {
       RenderBox renderBox = context.findRenderObject() as RenderBox;
       var size = renderBox.size;
@@ -168,42 +197,36 @@ class _GooglePlaceAutoCompleteTextFieldState
                   offset: Offset(0.0, size.height + 5.0),
                   child: Material(
                       elevation: 1.0,
-                      child: loading
-                          ? Center(
-                              child: Container(
-                                  width: 20,
-                                  height: 20,
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 10),
-                                  child: const CircularProgressIndicator()),
-                            )
-                          : ListView.builder(
-                              padding: EdgeInsets.zero,
-                              shrinkWrap: true,
-                              itemCount: alPredictions.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                String desc = alPredictions[index].description!;
-                                return ListTile(
-                                   onTap: (){
-                                     if (index < alPredictions.length) {
-                                       widget.itmClick!(alPredictions[index]);
-                                       if (!widget.isLatLngRequired) return;
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemCount: alPredictions.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          String desc = alPredictions[index].description!;
+                          return ListTile(
+                              onTap: () {
+                                if (index < alPredictions.length) {
+                                  widget.itmClick!(alPredictions[index]);
+                                  if (!widget.isLatLngRequired) return;
 
-                                       getPlaceDetailsFromPlaceId(
-                                           alPredictions[index]);
+                                  getPlaceDetailsFromPlaceId(
+                                      alPredictions[index]);
 
-                                       removeOverlay();
-                                     }
-                                   },
-                                    leading: Icon(Icons.location_on),
-                                    horizontalTitleGap: 8,
-                                    subtitle: Text(desc.split(",").sublist(1, 4).join(", "), style: TextStyle(
-                                      color: Theme.of(context).disabledColor.withAlpha(150)
-                                    ),),
-                                    title: Text(
-                                        desc.split(",").first));
+                                  removeOverlay();
+                                }
                               },
-                            )),
+                              leading: Icon(Icons.location_on),
+                              horizontalTitleGap: 8,
+                              subtitle: Text(
+                                desc.split(",").sublist(1, 4).join(", "),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .disabledColor
+                                        .withAlpha(150)),
+                              ),
+                              title: Text(desc.split(",").first));
+                        },
+                      )),
                 ),
               ));
     }
