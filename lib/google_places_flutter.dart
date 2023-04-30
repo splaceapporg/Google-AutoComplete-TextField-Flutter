@@ -74,8 +74,8 @@ class _GooglePlaceAutoCompleteTextFieldState
         style: widget.textStyle,
         controller: widget.textEditingController,
         onChanged: (string) {
-          if( widget.customTextChanged!=null)
-          widget.customTextChanged!(string);
+          if (widget.customTextChanged != null)
+            widget.customTextChanged!(string);
           subject.add(string);
         },
       ),
@@ -83,6 +83,9 @@ class _GooglePlaceAutoCompleteTextFieldState
   }
 
   getLocation(String text) async {
+    this._overlayEntry = this._createOverlayEntry(loading: true);
+    Overlay.of(context)!.insert(this._overlayEntry!);
+
     Dio dio = new Dio();
     String url =
         "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$text&key=${widget.googleAPIKey}";
@@ -95,7 +98,7 @@ class _GooglePlaceAutoCompleteTextFieldState
       url = url + "&radius=${widget.radius}";
     }
 
-    if(widget.types!=null){
+    if (widget.types != null) {
       url = url + "&types=${widget.types!.join("|")}";
     }
 
@@ -116,7 +119,7 @@ class _GooglePlaceAutoCompleteTextFieldState
     Response response = await dio.get(url);
     PlacesAutocompleteResponse subscriptionResponse =
         PlacesAutocompleteResponse.fromJson(response.data);
-
+    removeOverlay();
     if (text.length == 0) {
       alPredictions.clear();
       this._overlayEntry!.remove();
@@ -149,7 +152,7 @@ class _GooglePlaceAutoCompleteTextFieldState
     getLocation(text);
   }
 
-  OverlayEntry? _createOverlayEntry() {
+  OverlayEntry? _createOverlayEntry({bool loading = false}) {
     if (context != null && context.findRenderObject() != null) {
       RenderBox renderBox = context.findRenderObject() as RenderBox;
       var size = renderBox.size;
@@ -165,29 +168,39 @@ class _GooglePlaceAutoCompleteTextFieldState
                   offset: Offset(0.0, size.height + 5.0),
                   child: Material(
                       elevation: 1.0,
-                      child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        itemCount: alPredictions.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return InkWell(
-                            onTap: () {
-                              if (index < alPredictions.length) {
-                                widget.itmClick!(alPredictions[index]);
-                                if (!widget.isLatLngRequired) return;
+                      child: loading
+                          ? Center(
+                              child: Container(
+                                  width: 20,
+                                  height: 20,
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
+                                  child: const CircularProgressIndicator()),
+                            )
+                          : ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              itemCount: alPredictions.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return InkWell(
+                                  onTap: () {
+                                    if (index < alPredictions.length) {
+                                      widget.itmClick!(alPredictions[index]);
+                                      if (!widget.isLatLngRequired) return;
 
-                                getPlaceDetailsFromPlaceId(
-                                    alPredictions[index]);
+                                      getPlaceDetailsFromPlaceId(
+                                          alPredictions[index]);
 
-                                removeOverlay();
-                              }
-                            },
-                            child: Container(
-                                padding: EdgeInsets.all(10),
-                                child: Text(alPredictions[index].description!)),
-                          );
-                        },
-                      )),
+                                      removeOverlay();
+                                    }
+                                  },
+                                  child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      child: Text(
+                                          alPredictions[index].description!)),
+                                );
+                              },
+                            )),
                 ),
               ));
     }
