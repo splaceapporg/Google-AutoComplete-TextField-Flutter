@@ -196,7 +196,10 @@ class _GooglePlaceAutoCompleteTextFieldState
                                      }
                                    },
                                     leading: Icon(Icons.location_on),
-                                    subtitle: Text(desc.split(",").sublist(1, 4). join(", ")),
+                                    horizontalTitleGap: 8,
+                                    subtitle: Text(desc.split(",").sublist(1, 4).join(", "), style: TextStyle(
+                                      color: Theme.of(context).disabledColor.withAlpha(150)
+                                    ),),
                                     title: Text(
                                         desc.split(",").first));
                               },
