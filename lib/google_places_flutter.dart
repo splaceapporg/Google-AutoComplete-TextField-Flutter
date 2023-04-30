@@ -182,23 +182,23 @@ class _GooglePlaceAutoCompleteTextFieldState
                               shrinkWrap: true,
                               itemCount: alPredictions.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return InkWell(
-                                  onTap: () {
-                                    if (index < alPredictions.length) {
-                                      widget.itmClick!(alPredictions[index]);
-                                      if (!widget.isLatLngRequired) return;
+                                String desc = alPredictions[index].description!;
+                                return ListTile(
+                                   onTap: (){
+                                     if (index < alPredictions.length) {
+                                       widget.itmClick!(alPredictions[index]);
+                                       if (!widget.isLatLngRequired) return;
 
-                                      getPlaceDetailsFromPlaceId(
-                                          alPredictions[index]);
+                                       getPlaceDetailsFromPlaceId(
+                                           alPredictions[index]);
 
-                                      removeOverlay();
-                                    }
-                                  },
-                                  child: Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: Text(
-                                          alPredictions[index].description!)),
-                                );
+                                       removeOverlay();
+                                     }
+                                   },
+                                    leading: Icon(Icons.location_on),
+                                    subtitle: Text(desc.split(",").sublist(1, 4). join(", ")),
+                                    title: Text(
+                                        desc.split(",").first));
                               },
                             )),
                 ),
