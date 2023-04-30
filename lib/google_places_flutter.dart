@@ -24,6 +24,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
   String googleAPIKey;
   int debounceTime = 600;
   bool enabled;
+  FocusNode? focusNode;
   Function(String)? customTextChanged;
   List<String>? countries = [];
   TextEditingController textEditingController = TextEditingController();
@@ -39,6 +40,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
     this.lng,
     this.radius,
     this.types,
+    this.focusNode,
     this.enabled = true,
     this.isLatLngRequired = true,
     this.textStyle: const TextStyle(),
@@ -66,6 +68,7 @@ class _GooglePlaceAutoCompleteTextFieldState
     return CompositedTransformTarget(
       link: _layerLink,
       child: TextFormField(
+        focusNode: widget.focusNode,
         enabled: widget.enabled,
         decoration: widget.inputDecoration,
         style: widget.textStyle,
