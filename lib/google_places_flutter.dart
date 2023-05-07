@@ -191,6 +191,7 @@ class _GooglePlaceAutoCompleteTextFieldState
                 left: offset.dx,
                 top: size.height + offset.dy,
                 width: size.width,
+                bottom: MediaQuery.of(context).viewInsets.bottom,
                 child: CompositedTransformFollower(
                   showWhenUnlinked: false,
                   link: this._layerLink,
@@ -204,6 +205,7 @@ class _GooglePlaceAutoCompleteTextFieldState
                         separatorBuilder: (context, index) => Divider(),
                         itemBuilder: (BuildContext context, int index) {
                           String desc = alPredictions[index].description!;
+                          int descLength = desc.split(",").length;
                           return ListTile(
                               onTap: () {
                                 if (index < alPredictions.length) {
@@ -219,7 +221,10 @@ class _GooglePlaceAutoCompleteTextFieldState
                               leading: Icon(Icons.location_on),
                               horizontalTitleGap: 8,
                               subtitle: Text(
-                                desc.split(",").sublist(1, 4).join(", "),
+                                desc
+                                    .split(",")
+                                    .sublist(1, descLength < 4 ? descLength : 4)
+                                    .join(", "),
                                 style: TextStyle(
                                     color: Theme.of(context)
                                         .disabledColor
