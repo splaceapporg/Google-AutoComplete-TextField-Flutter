@@ -136,6 +136,9 @@ class _GooglePlaceAutoCompleteTextFieldState
     }
 
     //if (this._overlayEntry == null)
+    if(this._overlayEntry!=null) {
+      this._overlayEntry!.remove();
+    }
     this._overlayEntry = null;
     this._overlayEntry = this._createOverlayEntry();
     Overlay.of(context)!.insert(this._overlayEntry!);
@@ -251,7 +254,7 @@ class _GooglePlaceAutoCompleteTextFieldState
 
   removeOverlay() {
     alPredictions.clear();
-    this._overlayEntry = this._createOverlayEntry();
+    // this._overlayEntry = this._createOverlayEntry();
     this._overlayEntry!.remove();
     if (context != null) {
       Overlay.of(context)!.insert(this._overlayEntry!);
