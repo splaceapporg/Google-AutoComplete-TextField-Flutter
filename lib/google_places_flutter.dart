@@ -90,7 +90,8 @@ class _GooglePlaceAutoCompleteTextFieldState
 
     Dio dio = new Dio();
     String url =
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$text&key=${widget.googleAPIKey}";
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$text&key=${widget
+        .googleAPIKey}";
 
     if (widget.lat != null && widget.lng != null) {
       url = url + "&location=${widget.lat},${widget.lng}";
@@ -120,7 +121,7 @@ class _GooglePlaceAutoCompleteTextFieldState
 
     Response response = await dio.get(url);
     PlacesAutocompleteResponse subscriptionResponse =
-        PlacesAutocompleteResponse.fromJson(response.data);
+    PlacesAutocompleteResponse.fromJson(response.data);
     this._overlayLoadingEntry!.remove();
     if (text.length == 0) {
       alPredictions.clear();
@@ -135,7 +136,6 @@ class _GooglePlaceAutoCompleteTextFieldState
     }
 
     //if (this._overlayEntry == null)
-
     this._overlayEntry = null;
     this._overlayEntry = this._createOverlayEntry();
     Overlay.of(context)!.insert(this._overlayEntry!);
@@ -160,24 +160,25 @@ class _GooglePlaceAutoCompleteTextFieldState
       var size = renderBox.size;
       var offset = renderBox.localToGlobal(Offset.zero);
       return OverlayEntry(
-          builder: (context) => Positioned(
-              left: offset.dx,
-              top: size.height + offset.dy,
-              width: size.width,
-              child: CompositedTransformFollower(
-                  showWhenUnlinked: false,
-                  link: this._layerLink,
-                  offset: Offset(0.0, size.height + 5.0),
-                  child: Material(
-                      elevation: 1.0,
-                      child: Center(
-                        child: Container(
-                            width: 20,
-                            height: 20,
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
-                            child: const CircularProgressIndicator()),
-                      )))));
+          builder: (context) =>
+              Positioned(
+                  left: offset.dx,
+                  top: size.height + offset.dy,
+                  width: size.width,
+                  child: CompositedTransformFollower(
+                      showWhenUnlinked: false,
+                      link: this._layerLink,
+                      offset: Offset(0.0, size.height + 5.0),
+                      child: Material(
+                          elevation: 1.0,
+                          child: Center(
+                            child: Container(
+                                width: 20,
+                                height: 20,
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 10),
+                                child: const CircularProgressIndicator()),
+                          )))));
     }
   }
 
@@ -187,11 +188,15 @@ class _GooglePlaceAutoCompleteTextFieldState
       var size = renderBox.size;
       var offset = renderBox.localToGlobal(Offset.zero);
       return OverlayEntry(
-          builder: (context) => Positioned(
+          builder: (context) =>
+              Positioned(
                 left: offset.dx,
                 top: size.height + offset.dy,
                 width: size.width,
-                bottom: MediaQuery.of(context).viewInsets.bottom,
+                bottom: MediaQuery
+                    .of(context)
+                    .viewInsets
+                    .bottom,
                 child: CompositedTransformFollower(
                   showWhenUnlinked: false,
                   link: this._layerLink,
@@ -205,7 +210,9 @@ class _GooglePlaceAutoCompleteTextFieldState
                         separatorBuilder: (context, index) => Divider(),
                         itemBuilder: (BuildContext context, int index) {
                           String desc = alPredictions[index].description!;
-                          int descLength = desc.split(",").length;
+                          int descLength = desc
+                              .split(",")
+                              .length;
                           return ListTile(
                               onTap: () {
                                 if (index < alPredictions.length) {
@@ -215,6 +222,7 @@ class _GooglePlaceAutoCompleteTextFieldState
                                   getPlaceDetailsFromPlaceId(
                                       alPredictions[index]);
 
+                                  this._overlayEntry!.remove();
                                   removeOverlay();
                                 }
                               },
@@ -226,11 +234,14 @@ class _GooglePlaceAutoCompleteTextFieldState
                                     .sublist(1, descLength < 4 ? descLength : 4)
                                     .join(", "),
                                 style: TextStyle(
-                                    color: Theme.of(context)
+                                    color: Theme
+                                        .of(context)
                                         .disabledColor
                                         .withAlpha(150)),
                               ),
-                              title: Text(desc.split(",").first));
+                              title: Text(desc
+                                  .split(",")
+                                  .first));
                         },
                       )),
                 ),
@@ -241,17 +252,20 @@ class _GooglePlaceAutoCompleteTextFieldState
   removeOverlay() {
     alPredictions.clear();
     this._overlayEntry = this._createOverlayEntry();
+    this._overlayEntry!.remove();
     if (context != null) {
       Overlay.of(context)!.insert(this._overlayEntry!);
       this._overlayEntry!.markNeedsBuild();
     }
+    return;
   }
 
   Future<Response?> getPlaceDetailsFromPlaceId(Prediction prediction) async {
     //String key = GlobalConfiguration().getString('google_maps_key');
 
     var url =
-        "https://maps.googleapis.com/maps/api/place/details/json?placeid=${prediction.placeId}&key=${widget.googleAPIKey}";
+        "https://maps.googleapis.com/maps/api/place/details/json?placeid=${prediction
+        .placeId}&key=${widget.googleAPIKey}";
     Response response = await Dio().get(
       url,
     );
