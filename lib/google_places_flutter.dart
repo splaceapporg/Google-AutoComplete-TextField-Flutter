@@ -90,7 +90,7 @@ class _GooglePlaceAutoCompleteTextFieldState
 
     Dio dio = new Dio();
     String url =
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$text&key=${widget
+        "https://maps.googleapis.com/maps/api/place/${widget.radius != null? "nearbysearch" : "autocomplete"}/json?input=$text&key=${widget
         .googleAPIKey}";
 
     if (widget.lat != null && widget.lng != null) {
