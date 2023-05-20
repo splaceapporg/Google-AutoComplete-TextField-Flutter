@@ -90,7 +90,10 @@ class _GooglePlaceAutoCompleteTextFieldState
 
     Dio dio = new Dio();
     String url =
-        "https://maps.googleapis.com/maps/api/place/${widget.radius != null? "nearbysearch" : "autocomplete"}/json?input=$text&key=${widget
+        "https://maps.googleapis.com/maps/api/place/${widget.radius != null
+        ? "nearbysearch"
+        : "autocomplete"}/json?${widget.radius != null ? "keyword"
+        : "input"}=$text&key=${widget
         .googleAPIKey}";
 
     if (widget.lat != null && widget.lng != null) {
@@ -122,7 +125,7 @@ class _GooglePlaceAutoCompleteTextFieldState
     Response response = await dio.get(url);
     PlacesAutocompleteResponse subscriptionResponse =
     PlacesAutocompleteResponse.fromJson(response.data);
-    this._overlayLoadingEntry!.remove();
+    _overlayLoadingEntry!.remove();
     if (text.length == 0) {
       alPredictions.clear();
       this._overlayEntry!.remove();
@@ -132,16 +135,18 @@ class _GooglePlaceAutoCompleteTextFieldState
     isSearched = false;
     if (subscriptionResponse.predictions!.length > 0) {
       alPredictions.clear();
-      for(Prediction prediction in subscriptionResponse.predictions!) {
-        if(prediction.types?.any((element) => widget.types?.contains(element)??true) ?? false){
+      for (Prediction prediction in subscriptionResponse.predictions!) {
+        if (prediction.types?.any((element) =>
+        widget.types?.contains(element) ?? true) ?? false) {
           alPredictions.add(prediction);
         }
       }
     }
 
     //if (this._overlayEntry == null)
-    if(this._overlayEntry!=null) {
-      this._overlayEntry!.remove();
+    if (this._overlayEntry != null) {
+      if (this._overlayEntry!.mounted)
+        this._overlayEntry!.remove();
     }
     this._overlayEntry = null;
     this._overlayEntry = this._createOverlayEntry();
@@ -216,7 +221,7 @@ class _GooglePlaceAutoCompleteTextFieldState
                         itemCount: alPredictions.length,
                         separatorBuilder: (context, index) => Divider(),
                         itemBuilder: (BuildContext context, int index) {
-                          String desc = alPredictions[index].description!;
+                          String desc = widget.radius!=null? alPredictions[index].vicinity??"" : alPredictions[index].description??"";
                           int descLength = desc
                               .split(",")
                               .length;
@@ -235,7 +240,7 @@ class _GooglePlaceAutoCompleteTextFieldState
                               },
                               leading: Icon(Icons.location_on),
                               horizontalTitleGap: 8,
-                              subtitle: Text(
+                              subtitle: descLength == 1 ? null : Text(
                                 desc
                                     .split(",")
                                     .sublist(1, descLength < 4 ? descLength : 4)
