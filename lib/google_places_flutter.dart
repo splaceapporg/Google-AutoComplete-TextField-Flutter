@@ -221,7 +221,7 @@ class _GooglePlaceAutoCompleteTextFieldState
                         itemCount: alPredictions.length,
                         separatorBuilder: (context, index) => Divider(),
                         itemBuilder: (BuildContext context, int index) {
-                          String desc = widget.radius!=null? alPredictions[index].vicinity??"" : alPredictions[index].description??"";
+                          String desc =  alPredictions[index].description??"";
                           int descLength = desc
                               .split(",")
                               .length;
@@ -240,11 +240,12 @@ class _GooglePlaceAutoCompleteTextFieldState
                               },
                               leading: Icon(Icons.location_on),
                               horizontalTitleGap: 8,
-                              subtitle: descLength == 1 ? null : Text(
-                                desc
-                                    .split(",")
-                                    .sublist(1, descLength < 4 ? descLength : 4)
-                                    .join(", "),
+                              subtitle:Text(alPredictions[index].vicinity??""),
+                              // descLength == 1 ? null : Text(
+                              //   desc
+                              //       .split(",")
+                              //       .sublist(1, descLength < 4 ? descLength : 4)
+                              //       .join(", "),
                                 style: TextStyle(
                                     color: Theme
                                         .of(context)
