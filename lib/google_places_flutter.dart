@@ -246,6 +246,7 @@ class _GooglePlaceAutoCompleteTextFieldState
                               //       .split(",")
                               //       .sublist(1, descLength < 4 ? descLength : 4)
                               //       .join(", "),
+                                maxLines: 2,
                                 style: TextStyle(
                                     color: Theme
                                         .of(context)
