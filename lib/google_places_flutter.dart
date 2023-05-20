@@ -240,7 +240,7 @@ class _GooglePlaceAutoCompleteTextFieldState
                               },
                               leading: Icon(Icons.location_on),
                               horizontalTitleGap: 8,
-                              subtitle:Text(alPredictions[index].vicinity??""),
+                              subtitle:Text(alPredictions[index].vicinity??"",
                               // descLength == 1 ? null : Text(
                               //   desc
                               //       .split(",")
