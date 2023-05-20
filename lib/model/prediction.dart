@@ -10,6 +10,11 @@ class PlacesAutocompleteResponse {
       json['predictions'].forEach((v) {
         predictions!.add(new Prediction.fromJson(v));
       });
+    } else if (json['results'] != null) {
+      predictions = [];
+      json['results'].forEach((v) {
+        predictions!.add(new Prediction.fromJson(v));
+      });
     }
     status = json['status'];
   }
@@ -49,7 +54,7 @@ class Prediction {
       this.lng});
 
   Prediction.fromJson(Map<String, dynamic> json) {
-    description = json['description'];
+    description = json['description'] ?? json['name'] ?? "";
     id = json['id'];
     if (json['matched_substrings'] != null) {
       matchedSubstrings = [];
@@ -63,7 +68,7 @@ class Prediction {
         ? new StructuredFormatting.fromJson(json['structured_formatting'])
         : null;
     if (json['terms'] != null) {
-      terms =[];
+      terms = [];
       json['terms'].forEach((v) {
         terms!.add(new Terms.fromJson(v));
       });
