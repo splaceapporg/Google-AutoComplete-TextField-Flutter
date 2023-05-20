@@ -101,7 +101,7 @@ class _GooglePlaceAutoCompleteTextFieldState
       url = url + "&radius=${widget.radius}";
     }
 
-    if (widget.types != null) {
+    if (widget.radius == null && widget.types != null) {
       url = url + "&types=${widget.types!.join("|")}";
     }
 
@@ -132,7 +132,11 @@ class _GooglePlaceAutoCompleteTextFieldState
     isSearched = false;
     if (subscriptionResponse.predictions!.length > 0) {
       alPredictions.clear();
-      alPredictions.addAll(subscriptionResponse.predictions!);
+      for(Prediction prediction in subscriptionResponse.predictions!) {
+        if(prediction.types?.any((element) => widget.types?.contains(element)??true) ?? false){
+          alPredictions.add(prediction);
+        }
+      }
     }
 
     //if (this._overlayEntry == null)
