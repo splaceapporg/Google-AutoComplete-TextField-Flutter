@@ -240,12 +240,14 @@ class _GooglePlaceAutoCompleteTextFieldState
                               },
                               leading: Icon(Icons.location_on),
                               horizontalTitleGap: 8,
-                              subtitle:Text(alPredictions[index].vicinity??"",
-                              // descLength == 1 ? null : Text(
-                              //   desc
-                              //       .split(",")
-                              //       .sublist(1, descLength < 4 ? descLength : 4)
-                              //       .join(", "),
+                              subtitle:
+                              widget.radius != null ?
+                              Text(alPredictions[index].vicinity??"", style: TextStyle(height: 1),):
+                              Text(
+                                desc
+                                    .split(",")
+                                    .sublist(1, descLength < 4 ? descLength : 4)
+                                    .join(", "),
                                 maxLines: 2,
                                 style: TextStyle(
                                     color: Theme
